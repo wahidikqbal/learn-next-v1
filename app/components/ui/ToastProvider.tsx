@@ -192,7 +192,7 @@ function ToastCard({ toast, onClose }: { toast: ToastItem; onClose: () => void }
             <Icon className="mt-0.5 h-4 w-4 shrink-0" />
             <div className="min-w-0 flex-1">
                 {toast.title ? <p className="text-xs font-semibold">{toast.title}</p> : null}
-                <p className="break-words">{toast.message}</p>
+                <p className="wrap-break-words">{toast.message}</p>
             </div>
             <button
                 type="button"
