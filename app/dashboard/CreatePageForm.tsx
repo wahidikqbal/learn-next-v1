@@ -94,11 +94,10 @@ export default function CreatePageForm({ initialTemplateId, action }: CreatePage
                                 key={template.id}
                                 type="button"
                                 onClick={() => setTemplateId(template.id)}
-                                className={`rounded-xl border text-left transition ${
-                                    selected
-                                        ? 'border-blue-600 ring-2 ring-blue-100'
-                                        : 'border-gray-200 hover:border-gray-300'
-                                }`}
+                                className={`rounded-xl border text-left transition ${selected
+                                    ? 'border-blue-600 ring-2 ring-blue-100'
+                                    : 'border-gray-200 hover:border-gray-300'
+                                    }`}
                             >
                                 <div className={`h-24 rounded-t-xl ${template.thumbnail} p-3`}>
                                     <div className="h-2 w-2/3 rounded bg-white/80" />
@@ -122,7 +121,7 @@ export default function CreatePageForm({ initialTemplateId, action }: CreatePage
                     </p>
                     <a
                         href="/templates"
-                        className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 border border-blue-200 hover:bg-blue-100"
+                        className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-blue-700 border border-blue-200 hover:bg-blue-500 hover:text-blue-50 transition"
                     >
                         Lihat semua template
                     </a>
