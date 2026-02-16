@@ -3,8 +3,7 @@ import Google from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { Role } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-
-const ADMIN_EMAIL = 'wahidikqbal@gmail.com';
+import { isPrimaryAdminEmail } from '@/lib/admin-config';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -21,19 +20,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async session({ session, user }) {
             if (session.user) {
                 session.user.id = user.id;
-                const isAdminEmail =
-                    typeof session.user.email === 'string' &&
-                    session.user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+                const isAdminEmail = isPrimaryAdminEmail(session.user.email);
 
                 session.user.role = isAdminEmail ? Role.ADMIN : user.role;
 
                 if (isAdminEmail && user.role !== Role.ADMIN) {
-                    await prisma.user.updateMany({
+                    await prisma.user.update({
                         where: {
-                            email: {
-                                equals: ADMIN_EMAIL,
-                                mode: 'insensitive',
-                            },
+                            id: user.id,
                         },
                         data: {
                             role: Role.ADMIN,

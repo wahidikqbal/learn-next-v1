@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { Role } from '@prisma/client';
 import { requireAdmin } from '@/lib/authz';
 import { prisma } from '@/lib/prisma';
+import { isPrimaryAdminEmail } from '@/lib/admin-config';
 import { deleteAnyPageAction, deleteUserAction, setUserRoleAction } from './actions';
 import DeleteUserButton from './DeleteUserButton';
+import RoleToggleButton from './RoleToggleButton';
 import AppSidebar from '@/app/components/layout/AppSidebar';
 import DeletePageButton from '@/app/dashboard/DeletePageButton';
-
-const PRIMARY_ADMIN_EMAIL = 'wahidikqbal@gmail.com';
 
 export default async function AdminPage() {
     const session = await requireAdmin();
@@ -62,7 +62,10 @@ export default async function AdminPage() {
                     <section className="mt-8 rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
                     <h2 className="text-lg font-semibold text-gray-900">Users</h2>
                     <div className="mt-4 space-y-3 md:hidden">
-                        {users.map((user) => (
+                        {users.map((user) => {
+                            const isPrimaryAdmin = isPrimaryAdminEmail(user.email);
+
+                            return (
                             <article key={user.id} className="rounded-lg border border-gray-200 p-3">
                                 <div className="flex items-start justify-between gap-2">
                                     <div>
@@ -83,32 +86,24 @@ export default async function AdminPage() {
                                 </div>
                                 <p className="mt-2 text-xs text-gray-600">Total page: {user._count.pages}</p>
                                 <div className="mt-3 flex flex-wrap gap-2">
-                                    <form action={setUserRoleAction}>
-                                        <input type="hidden" name="userId" value={user.id} />
-                                        <input
-                                            type="hidden"
-                                            name="role"
-                                            value={user.role === Role.ADMIN ? Role.USER : Role.ADMIN}
-                                        />
-                                        <button
-                                            type="submit"
-                                            className="rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
-                                        >
-                                            {user.role === Role.ADMIN ? 'Jadikan User' : 'Jadikan Admin'}
-                                        </button>
-                                    </form>
+                                    <RoleToggleButton
+                                        action={setUserRoleAction}
+                                        userId={user.id}
+                                        currentRole={user.role}
+                                        disabled={isPrimaryAdmin}
+                                    />
                                     <DeleteUserButton
                                         action={deleteUserAction}
                                         userId={user.id}
                                         userEmail={user.email ?? '-'}
                                         disabled={
                                             user.id === session.user.id ||
-                                            user.email?.toLowerCase() === PRIMARY_ADMIN_EMAIL
+                                            isPrimaryAdmin
                                         }
                                     />
                                 </div>
                             </article>
-                        ))}
+                        )})}
                     </div>
 
                     <div className="mt-4 overflow-x-auto hidden md:block">
@@ -123,7 +118,10 @@ export default async function AdminPage() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {users.map((user) => (
+                                {users.map((user) => {
+                                    const isPrimaryAdmin = isPrimaryAdminEmail(user.email);
+
+                                    return (
                                     <tr key={user.id} className="border-b border-gray-100">
                                         <td className="py-3 pr-4 text-gray-800">{user.email ?? '-'}</td>
                                         <td className="py-3 pr-4 text-gray-700">{user.name ?? '-'}</td>
@@ -141,33 +139,25 @@ export default async function AdminPage() {
                                         <td className="py-3 pr-4 text-gray-700">{user._count.pages}</td>
                                         <td className="py-3">
                                             <div className="flex gap-2">
-                                                <form action={setUserRoleAction}>
-                                                    <input type="hidden" name="userId" value={user.id} />
-                                                    <input
-                                                        type="hidden"
-                                                        name="role"
-                                                        value={user.role === Role.ADMIN ? Role.USER : Role.ADMIN}
-                                                    />
-                                                    <button
-                                                        type="submit"
-                                                        className="rounded-md border border-gray-300 px-2.5 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
-                                                    >
-                                                        {user.role === Role.ADMIN ? 'Jadikan User' : 'Jadikan Admin'}
-                                                    </button>
-                                                </form>
+                                                <RoleToggleButton
+                                                    action={setUserRoleAction}
+                                                    userId={user.id}
+                                                    currentRole={user.role}
+                                                    disabled={isPrimaryAdmin}
+                                                />
                                                 <DeleteUserButton
                                                     action={deleteUserAction}
                                                     userId={user.id}
                                                     userEmail={user.email ?? '-'}
                                                     disabled={
                                                         user.id === session.user.id ||
-                                                        user.email?.toLowerCase() === PRIMARY_ADMIN_EMAIL
+                                                        isPrimaryAdmin
                                                     }
                                                 />
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
+                                )})}
                             </tbody>
                         </table>
                     </div>

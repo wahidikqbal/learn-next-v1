@@ -3,6 +3,7 @@
 import { Trash2 } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import ConfirmModal from '@/app/components/ui/ConfirmModal';
+import { useToast } from '@/app/components/ui/ToastProvider';
 
 type DeletePageButtonProps = {
     pageId: string;
@@ -11,9 +12,19 @@ type DeletePageButtonProps = {
     compact?: boolean;
 };
 
+function hasActionError(result: unknown): result is { ok: false; message: string } {
+    if (!result || typeof result !== 'object') {
+        return false;
+    }
+
+    const maybe = result as { ok?: boolean; message?: string };
+    return maybe.ok === false && typeof maybe.message === 'string';
+}
+
 export default function DeletePageButton({ pageId, pageName, action, compact = false }: DeletePageButtonProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
+    const { showToast } = useToast();
 
     const handleConfirmDelete = () => {
         const formData = new FormData();
@@ -21,7 +32,18 @@ export default function DeletePageButton({ pageId, pageName, action, compact = f
 
         setIsOpen(false);
         startTransition(async () => {
-            await action(formData);
+            try {
+                const result = await action(formData);
+
+                if (hasActionError(result)) {
+                    showToast(result.message, 'error');
+                    return;
+                }
+
+                showToast('Halaman berhasil dihapus.', 'success');
+            } catch {
+                showToast('Gagal menghapus halaman. Coba lagi.', 'error');
+            }
         });
     };
 
