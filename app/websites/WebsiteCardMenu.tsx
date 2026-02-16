@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { useEffect, useId } from 'react';
-import { MoreVertical } from 'lucide-react';
+import { useEffect, useId, useRef } from 'react';
+import { Eye, MoreVertical, Rocket, Trash2 } from 'lucide-react';
 import ConfirmModal from '@/app/components/ui/ConfirmModal';
 
 type WebsiteCardMenuProps = {
     pageId: string;
     pageName: string;
-    siteUrl: string;
+    previewUrl: string;
     isPublished: boolean;
     publishAction: (formData: FormData) => void | Promise<void>;
     unpublishAction: (formData: FormData) => void | Promise<void>;
@@ -21,7 +21,7 @@ type ConfirmType = 'publish' | 'unpublish' | 'delete' | null;
 export default function WebsiteCardMenu({
     pageId,
     pageName,
-    siteUrl,
+    previewUrl,
     isPublished,
     publishAction,
     unpublishAction,
@@ -29,6 +29,7 @@ export default function WebsiteCardMenu({
     showStatusActions = true,
 }: WebsiteCardMenuProps) {
     const menuId = useId();
+    const rootRef = useRef<HTMLDivElement | null>(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [confirmType, setConfirmType] = useState<ConfirmType>(null);
     const [isPending, startTransition] = useTransition();
@@ -53,6 +54,32 @@ export default function WebsiteCardMenu({
             new CustomEvent('website-card-menu-open', { detail: { id: menuId } })
         );
     }, [isMenuOpen, menuId]);
+
+    useEffect(() => {
+        if (!isMenuOpen) return;
+
+        const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+            if (!rootRef.current) return;
+            const target = event.target as Node | null;
+            if (target && !rootRef.current.contains(target)) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        const handleEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setIsMenuOpen(false);
+        };
+
+        document.addEventListener('mousedown', handlePointerDown);
+        document.addEventListener('touchstart', handlePointerDown);
+        document.addEventListener('keydown', handleEscape);
+
+        return () => {
+            document.removeEventListener('mousedown', handlePointerDown);
+            document.removeEventListener('touchstart', handlePointerDown);
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, [isMenuOpen]);
 
     const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
@@ -103,11 +130,11 @@ export default function WebsiteCardMenu({
 
     return (
         <>
-            <div className="relative">
+            <div ref={rootRef} className="relative">
                 <button
                     type="button"
                     onClick={toggleMenu}
-                    className={`group relative inline-flex items-center justify-center rounded-xl border p-2 text-slate-600 shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${
+                    className={`group relative inline-flex items-center justify-center rounded-lg border p-2 text-slate-600 shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${
                         isMenuOpen
                             ? 'border-blue-200 bg-blue-50 text-blue-700 ring-2 ring-blue-100'
                             : 'border-slate-200 bg-white hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50/70 hover:text-blue-700 hover:shadow'
@@ -123,54 +150,49 @@ export default function WebsiteCardMenu({
                 </button>
 
                 {isMenuOpen && (
-                    <>
-                        <button
-                            type="button"
-                            aria-label="Close menu"
-                            className="fixed inset-0 z-10 cursor-default"
-                            onClick={() => setIsMenuOpen(false)}
-                        />
-                        <div className="absolute right-0 z-20 mt-2 w-40 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
-                            {isPublished && (
-                                <a
-                                    href={siteUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="block rounded-lg px-3 py-2 text-xs font-medium text-blue-700 hover:bg-blue-50"
-                                >
-                                    Visit Website
-                                </a>
-                            )}
+                    <div className="absolute right-0 z-20 mt-2 w-48 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
+                            <a
+                                href={previewUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                            >
+                                <Eye size={15} />
+                                Preview
+                            </a>
 
                             {showStatusActions && (
                                 isPublished ? (
                                     <button
                                         type="button"
                                         onClick={() => openConfirm('unpublish')}
-                                        className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-amber-700 hover:bg-amber-50"
+                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
                                     >
+                                        <Rocket size={15} />
                                         Unpublish
                                     </button>
                                 ) : (
                                     <button
                                         type="button"
                                         onClick={() => openConfirm('publish')}
-                                        className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-emerald-700 hover:bg-emerald-50"
+                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 hover:bg-slate-50"
                                     >
+                                        <Rocket size={15} />
                                         Publish
                                     </button>
                                 )
                             )}
 
+                            <div className="my-1 border-t border-slate-100" />
                             <button
                                 type="button"
                                 onClick={() => openConfirm('delete')}
-                                className="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-red-700 hover:bg-red-50"
+                                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50"
                             >
+                                <Trash2 size={15} />
                                 Delete
                             </button>
-                        </div>
-                    </>
+                    </div>
                 )}
             </div>
             <ConfirmModal

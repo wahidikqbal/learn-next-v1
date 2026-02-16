@@ -50,7 +50,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
                 <section className="flex-1">
                     <div className="border-b border-slate-200 bg-white px-4 py-4 sm:px-6 lg:px-10">
-                        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                             <div>
                                 <div className="flex items-center gap-1.5 text-sm text-slate-500">
                                     <Home size={14} />
