@@ -11,6 +11,7 @@ import EditorSidebar from '@/app/components/editor/EditorSidebar';
 import EditorToolbar from '@/app/components/editor/EditorToolbar';
 import EditorCanvas from '@/app/components/editor/EditorCanvas';
 import ResetModal from '@/app/components/editor/ResetModal';
+import EditorLoadingScreen from '@/app/components/editor/EditorLoadingScreen';
 import TemplateSelector from '@/app/components/templates/TemplateSelector';
 
 type EditorPropValue = string | number | boolean;
@@ -233,7 +234,7 @@ export default function EditByPageId() {
     }, [blocks, pageId, persistBlocks]);
 
     if (!isLoaded) {
-        return <div className="flex h-screen items-center justify-center">Loading editor...</div>;
+        return <EditorLoadingScreen />;
     }
 
     return (
