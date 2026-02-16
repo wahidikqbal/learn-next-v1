@@ -1,4 +1,4 @@
-import { componentRegistry } from './registry';
+import { componentRegistry } from './editor/schemas/registry';
 import { validateProps } from './editor/validateProps';
 import { Field } from './editor/types/editor';
 import { BlockType } from './editor/types/editor';
