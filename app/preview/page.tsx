@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import PageRenderer, { Block } from '../components/PageRenderer';
 import { schemaMap } from '../components/editor/schemaMap';
-import PreviewLoadingScreen from '@/app/components/ui/PreviewLoadingScreen';
+import PreviewLoadingScreen from '@/shared/ui/feedback/PreviewLoadingScreen';
 
 function PreviewPageContent() {
     const searchParams = useSearchParams();

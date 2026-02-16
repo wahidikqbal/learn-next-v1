@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import SearchField from '@/app/components/ui/SearchField';
+import SearchField from '@/shared/ui/inputs/SearchField';
 
 type WebsitesFiltersProps = {
     initialQuery: string;

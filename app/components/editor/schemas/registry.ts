@@ -1,18 +1,18 @@
-import Hero from '../../ui/Hero';
-import Card from '../../ui/Card';
-import ButtonOne from '../../ui/ButtonOne';
-import TitleOne from '../../ui/TitleOne';
-import ImageComponent from '../../ui/ImageComponent';
-import FeatureGrid from '../../ui/FeatureGrid';
-import TestimonialGrid from '../../ui/TestimonialGrid';
-import Footer from '../../ui/Footer';
+import Hero from '@/shared/ui/blocks/Hero';
+import Card from '@/shared/ui/blocks/Card';
+import Button from '@/shared/ui/blocks/Button';
+import Title from '@/shared/ui/blocks/Title';
+import Image from '@/shared/ui/blocks/Image';
+import FeatureGrid from '@/shared/ui/blocks/FeatureGrid';
+import TestimonialGrid from '@/shared/ui/blocks/TestimonialGrid';
+import Footer from '@/shared/ui/blocks/Footer';
 
 export const componentRegistry = {
     hero: Hero,
     card: Card,
-    button: ButtonOne,
-    title: TitleOne,
-    image: ImageComponent,
+    button: Button,
+    title: Title,
+    image: Image,
     featureGrid: FeatureGrid,
     testimonialGrid: TestimonialGrid,
     footer: Footer

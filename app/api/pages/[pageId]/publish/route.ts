@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import { Role } from '@prisma/client';
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
+import { publishPageForActor } from '@/features/pages/services/page.service';
 
 type PageParams = {
     params: Promise<{ pageId: string }>;
@@ -15,27 +14,28 @@ export async function POST(_: Request, { params }: PageParams) {
     }
 
     const { pageId } = await params;
-    const page = await prisma.page.findUnique({
-        where: { id: pageId },
+    const result = await publishPageForActor({
+        pageId,
+        actorUserId: session.user.id,
+        actorRole: session.user.role,
     });
 
-    if (!page) {
+    if (!result.ok && result.reason === 'not_found') {
         return NextResponse.json({ error: 'Halaman tidak ditemukan.' }, { status: 404 });
     }
 
-    if (session.user.role !== Role.ADMIN && page.ownerId !== session.user.id) {
+    if (!result.ok && result.reason === 'forbidden') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    const updatedPage = await prisma.page.update({
-        where: { id: page.id },
-        data: { isPublished: true },
-    });
+    if (!result.ok) {
+        return NextResponse.json({ error: 'Gagal publish halaman.' }, { status: 500 });
+    }
 
     return NextResponse.json({
         success: true,
-        subdomain: updatedPage.subdomain,
-        publishedAt: updatedPage.updatedAt,
-        url: `http://${updatedPage.subdomain}.localhost:3000`,
+        subdomain: result.page.subdomain,
+        publishedAt: result.page.publishedAt,
+        url: `http://${result.page.subdomain}.localhost:3000`,
     });
 }

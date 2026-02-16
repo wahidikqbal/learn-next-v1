@@ -7,7 +7,7 @@ import {
 import { requireUser } from '@/lib/authz';
 import { createPageAction } from './actions';
 import CreatePageForm from './CreatePageForm';
-import AppSidebar from '@/app/components/layout/AppSidebar';
+import AppSidebar from '@/shared/ui/navigation/AppSidebar';
 
 type DashboardPageProps = {
     searchParams: Promise<{

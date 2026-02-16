@@ -5,13 +5,12 @@ type TitleProps = {
     align?: 'left' | 'center' | 'right';
 };
 
-export default function TitleOne({
+export default function Title({
     text = 'Default Title',
     level = 'h1',
     color = '#000000',
     align = 'left',
 }: TitleProps) {
-    // Memilih tag HTML secara dinamis berdasarkan level
     const Tag = level;
 
     const sizeClasses = {
@@ -27,7 +26,7 @@ export default function TitleOne({
     };
 
     return (
-        <Tag 
+        <Tag
             className={`${sizeClasses[level]} ${alignClasses[align]} py-4`}
             style={{ color }}
         >

@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { Role } from '@prisma/client';
 import { requireAdmin } from '@/lib/authz';
-import { prisma } from '@/lib/prisma';
 import { isPrimaryAdminEmail } from '@/lib/admin-config';
 import { deleteAnyPageAction, deleteUserAction, setUserRoleAction } from './actions';
+import { listAdminOverview } from '@/features/admin/services/admin.service';
 import DeleteUserButton from './DeleteUserButton';
 import RoleToggleButton from './RoleToggleButton';
-import AppSidebar from '@/app/components/layout/AppSidebar';
+import AppSidebar from '@/shared/ui/navigation/AppSidebar';
 import DeletePageButton from '@/app/dashboard/DeletePageButton';
 
 export default async function AdminPage() {
@@ -14,22 +14,7 @@ export default async function AdminPage() {
     const profileImage = session.user.image || '/default-avatar.svg';
     const profileName = session.user.name?.trim() || session.user.email?.split('@')[0] || 'User';
 
-    const [users, pages] = await Promise.all([
-        prisma.user.findMany({
-            orderBy: { createdAt: 'desc' },
-            include: {
-                _count: {
-                    select: { pages: true },
-                },
-            },
-        }),
-        prisma.page.findMany({
-            orderBy: { updatedAt: 'desc' },
-            include: {
-                owner: true,
-            },
-        }),
-    ]);
+    const [users, pages] = await listAdminOverview();
 
     return (
         <main className="min-h-screen bg-slate-50">

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import ConfirmModal from '@/app/components/ui/ConfirmModal';
-import { useToast } from '@/app/components/ui/ToastProvider';
+import ConfirmModal from '@/shared/ui/feedback/ConfirmModal';
+import { useToast } from '@/shared/ui/feedback/ToastProvider';
 import type { AdminActionResult } from './action-types';
 
 type DeleteUserButtonProps = {

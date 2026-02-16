@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import ConfirmModal from '@/app/components/ui/ConfirmModal';
+import ConfirmModal from '@/shared/ui/feedback/ConfirmModal';
 
 type PublishToggleButtonProps = {
     pageId: string;

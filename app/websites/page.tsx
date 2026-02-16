@@ -14,7 +14,7 @@ import { prisma } from '@/lib/prisma';
 import { deletePageAction, publishPageAction, unpublishPageAction } from '@/app/dashboard/actions';
 import CopyUrlButton from '@/app/dashboard/CopyUrlButton';
 import { defaultTemplates } from '@/app/components/templates/defaults';
-import AppSidebar from '@/app/components/layout/AppSidebar';
+import AppSidebar from '@/shared/ui/navigation/AppSidebar';
 import WebsitesFilters from './WebsitesFilters';
 import WebsiteCardMenu from './WebsiteCardMenu';
 
@@ -162,7 +162,7 @@ export default async function WebsitesPage({ searchParams }: WebsitesPageProps) 
                                                 className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl"
                                             >
                                                 <div className={`relative h-44 ${getTemplateThumbnailClass(page.templateId)} p-3`}>
-                                                    <div className="absolute inset-0 bg-gradient-to-b from-white/25 via-transparent to-slate-900/15" />
+                                                    <div className="absolute inset-0 bg-linear-to-b from-white/25 via-transparent to-slate-900/15" />
                                                     <span className={`absolute right-3 top-3 z-20 rounded-full px-3 py-1 text-xs font-semibold backdrop-blur-sm ${page.isPublished ? 'bg-emerald-100/95 text-emerald-700' : 'bg-amber-100/95 text-amber-700'}`}>
                                                         {page.isPublished ? 'Published' : 'Draft'}
                                                     </span>

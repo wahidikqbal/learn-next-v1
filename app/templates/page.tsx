@@ -6,7 +6,7 @@ import { LayoutTemplate, ArrowRight, ExternalLink } from 'lucide-react';
 import { defaultTemplates } from '../components/templates/defaults';
 import { Template, TemplateCategory, TEMPLATE_CATEGORIES, } from '../components/templates/types';
 import { useMemo, useState } from 'react';
-import SearchField from '../components/ui/SearchField';
+import SearchField from '@/shared/ui/inputs/SearchField';
 
 export default function TemplatesPage() {
     const router = useRouter();

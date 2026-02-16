@@ -34,12 +34,12 @@ export default function Hero({
     return (
         <section
             className={cn(
-                "w-full transition-all duration-300",
+                'w-full transition-all duration-300',
                 paddingClass[padding] || paddingClass.lg
             )}
             style={{ backgroundColor, color: textColor }}
         >
-            <div className={cn("max-w-4xl mx-auto flex flex-col", alignClass)}>
+            <div className={cn('max-w-4xl mx-auto flex flex-col', alignClass)}>
                 <h1 className="text-4xl md:text-5xl lg:text-7xl font-extrabold mb-6 tracking-tight leading-tight">
                     {heading}
                 </h1>
@@ -50,4 +50,3 @@ export default function Hero({
         </section>
     );
 }
-

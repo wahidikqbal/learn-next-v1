@@ -1,4 +1,4 @@
-import LoadingScreen from '@/app/components/ui/LoadingScreen';
+import LoadingScreen from '@/shared/ui/feedback/LoadingScreen';
 
 export default function WebsitesLoading() {
     return (
@@ -24,4 +24,3 @@ export default function WebsitesLoading() {
         </LoadingScreen>
     );
 }
-

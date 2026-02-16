@@ -3,8 +3,8 @@
 import { useState, useTransition } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { Eye, MoreVertical, Rocket, Trash2 } from 'lucide-react';
-import ConfirmModal from '@/app/components/ui/ConfirmModal';
-import { useToast } from '@/app/components/ui/ToastProvider';
+import ConfirmModal from '@/shared/ui/feedback/ConfirmModal';
+import { useToast } from '@/shared/ui/feedback/ToastProvider';
 
 type WebsiteCardMenuProps = {
     pageId: string;

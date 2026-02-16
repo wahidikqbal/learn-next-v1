@@ -1,7 +1,6 @@
 import { LucideIcon, Star, ShieldCheck, Zap, Users, Box, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Map string names to Lucide icons
 const iconMap: Record<string, LucideIcon> = {
     star: Star,
     shield: ShieldCheck,
@@ -24,7 +23,6 @@ type FeatureGridProps = {
     columns?: '2' | '3' | '4';
     backgroundColor?: string;
     textColor?: string;
-    // Flat props for editor simplicity
     f1Title?: string;
     f1Desc?: string;
     f1Icon?: string;
@@ -50,14 +48,12 @@ export default function FeatureGrid({
     f3Title = 'Secure', f3Desc = 'Safe packaging.', f3Icon = 'shield',
     f4Title = 'Support', f4Desc = '24/7 assistance.', f4Icon = 'users',
 }: FeatureGridProps) {
-
-    // Construct features array from flat props
     const features = [
         { title: f1Title, desc: f1Desc, icon: f1Icon },
         { title: f2Title, desc: f2Desc, icon: f2Icon },
         { title: f3Title, desc: f3Desc, icon: f3Icon },
         { title: f4Title, desc: f4Desc, icon: f4Icon },
-    ].filter(f => f.title && f.title.trim() !== ''); // Only show if title exists
+    ].filter((f) => f.title && f.title.trim() !== '');
 
     const gridCols = columns === '2' ? 'md:grid-cols-2' : columns === '3' ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-4';
 
@@ -72,7 +68,7 @@ export default function FeatureGrid({
                     <p className="opacity-70 max-w-2xl mx-auto text-lg">{subtitle}</p>
                 </div>
 
-                <div className={cn("grid grid-cols-1 gap-6 md:gap-8", gridCols)}>
+                <div className={cn('grid grid-cols-1 gap-6 md:gap-8', gridCols)}>
                     {features.map((feature, idx) => {
                         const Icon = iconMap[feature.icon] || Star;
                         return (
@@ -90,4 +86,3 @@ export default function FeatureGrid({
         </section>
     );
 }
-

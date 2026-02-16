@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import type { Prisma } from '@prisma/client';
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
-import { isValidSubdomain, normalizeSubdomain } from '@/lib/pages';
+import { publishCustomPageForOwner } from '@/features/pages/services/page.service';
 
 type PublishPayload = {
     subdomain?: unknown;
@@ -26,48 +24,22 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Payload tidak valid.' }, { status: 400 });
     }
 
-    const subdomain = typeof payload.subdomain === 'string'
-        ? normalizeSubdomain(payload.subdomain)
-        : '';
+    const result = await publishCustomPageForOwner({
+        ownerId: session.user.id,
+        subdomain: payload.subdomain,
+        blocks: payload.blocks,
+        templateId: payload.templateId,
+        name: payload.name,
+    });
 
-    if (!isValidSubdomain(subdomain)) {
-        return NextResponse.json({ error: 'Subdomain tidak valid.' }, { status: 400 });
-    }
-
-    if (!Array.isArray(payload.blocks)) {
-        return NextResponse.json({ error: 'Data blocks tidak valid.' }, { status: 400 });
-    }
-
-    const name = typeof payload.name === 'string' && payload.name.trim()
-        ? payload.name.trim()
-        : `Website ${new Date().toLocaleDateString('id-ID')}`;
-
-    const templateId = typeof payload.templateId === 'string' && payload.templateId.trim()
-        ? payload.templateId.trim()
-        : 'custom';
-
-    try {
-        const page = await prisma.page.create({
-            data: {
-                name,
-                templateId,
-                subdomain,
-                blocks: payload.blocks as Prisma.InputJsonValue,
-                ownerId: session.user.id,
-                isPublished: true,
-            },
-        });
-
-        return NextResponse.json({
-            success: true,
-            pageId: page.id,
-            subdomain: page.subdomain,
-            publishedAt: page.updatedAt,
-            url: `http://${page.subdomain}.localhost:3000`,
-        });
-    } catch (error: unknown) {
-        const typedError = error as { code?: string };
-        if (typedError.code === 'P2002') {
+    if (!result.ok) {
+        if (result.reason === 'invalid_subdomain') {
+            return NextResponse.json({ error: 'Subdomain tidak valid.' }, { status: 400 });
+        }
+        if (result.reason === 'invalid_blocks') {
+            return NextResponse.json({ error: 'Data blocks tidak valid.' }, { status: 400 });
+        }
+        if (result.reason === 'subdomain_conflict') {
             return NextResponse.json(
                 { error: 'Subdomain sudah dipakai.' },
                 { status: 409 }
@@ -75,4 +47,12 @@ export async function POST(request: Request) {
         }
         return NextResponse.json({ error: 'Publish gagal.' }, { status: 500 });
     }
+
+    return NextResponse.json({
+        success: true,
+        pageId: result.page.id,
+        subdomain: result.page.subdomain,
+        publishedAt: result.page.publishedAt,
+        url: `http://${result.page.subdomain}.localhost:3000`,
+    });
 }

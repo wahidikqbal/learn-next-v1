@@ -1,4 +1,3 @@
-
 export interface ButtonProps {
     label?: string;
     href?: string;
@@ -9,8 +8,7 @@ export interface ButtonProps {
     borderRadius?: 'none' | 'sm' | 'md' | 'lg' | 'full';
 }
 
-
-export default function ButtonOne({
+export default function Button({
     label = 'Click Me',
     href = 'https://google.com',
     color = '#3b82f6',
@@ -33,26 +31,25 @@ export default function ButtonOne({
         full: 'rounded-full',
     };
 
-    const baseStyles = "font-semibold inline-block transition-all duration-200 transform active:scale-95";
+    const baseStyles = 'font-semibold inline-block transition-all duration-200 transform active:scale-95';
 
-    // Dynamic styles based on variant
     let variantStyles = {};
     if (variant === 'solid') {
         variantStyles = {
             backgroundColor: color,
             color: textColor,
-            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         };
     } else if (variant === 'outline') {
         variantStyles = {
             backgroundColor: 'transparent',
-            color: color,
-            border: `2px solid ${color}`
+            color,
+            border: `2px solid ${color}`,
         };
     } else if (variant === 'ghost') {
         variantStyles = {
             backgroundColor: 'transparent',
-            color: color
+            color,
         };
     }
 

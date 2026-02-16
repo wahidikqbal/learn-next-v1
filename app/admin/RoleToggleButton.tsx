@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import { Role } from '@prisma/client';
-import { useToast } from '@/app/components/ui/ToastProvider';
+import { useToast } from '@/shared/ui/feedback/ToastProvider';
 import type { AdminActionResult } from './action-types';
 
 type RoleToggleButtonProps = {

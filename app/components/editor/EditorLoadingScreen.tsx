@@ -1,6 +1,6 @@
 'use client';
 
-import LoadingScreen from '@/app/components/ui/LoadingScreen';
+import LoadingScreen from '@/shared/ui/feedback/LoadingScreen';
 
 export default function EditorLoadingScreen() {
     return (

@@ -15,7 +15,7 @@ export default function Footer({
     address = 'Jl. Raya Darmo Permai III No. 88, Surabaya',
     phone = '+62 812-3456-7890',
     email = 'info@dimsumjoss.com',
-    copyright = '© 2024 Dimsum Joss. All rights reserved.',
+    copyright = 'Â© 2024 Dimsum Joss. All rights reserved.',
     backgroundColor = '#1f2937',
     textColor = '#ffffff',
 }: FooterProps) {
@@ -50,4 +50,3 @@ export default function Footer({
         </footer>
     );
 }
-

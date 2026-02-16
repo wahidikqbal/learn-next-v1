@@ -1,4 +1,4 @@
-import ButtonOne, { ButtonProps } from "../ui/ButtonOne";
+import Button, { ButtonProps } from '@/shared/ui/blocks/Button';
 
 // interface PreviewProps {
 //     label: string;
@@ -7,13 +7,13 @@ import ButtonOne, { ButtonProps } from "../ui/ButtonOne";
 //     textColor: string;
 // }
 
-type PreviewProps = ButtonProps; // langsung gunakan ButtonProps dari ButtonOne
+type PreviewProps = ButtonProps;
 
 
 export default function Preview(props: PreviewProps) {
     return (
         <div className="flex items-center justify-center h-full">
-            <ButtonOne {...props} />
+            <Button {...props} />
         </div>
     );
 }
