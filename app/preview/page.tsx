@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import PageRenderer, { Block } from '../components/PageRenderer';
 import { schemaMap } from '../components/editor/schemaMap';
+import PreviewLoadingScreen from '@/app/components/ui/PreviewLoadingScreen';
 
 export default function PreviewPage() {
     const searchParams = useSearchParams();
@@ -48,13 +49,7 @@ export default function PreviewPage() {
     // 3. Tampilkan loading selama blocks masih null (proses sinkronisasi)
     // Ini mencegah render "setengah matang" yang memicu cascading renders
     if (blocks === null) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-gray-50">
-                <div className="animate-pulse text-gray-400 font-medium">
-                    Synchronizing Preview...
-                </div>
-            </div>
-        );
+        return <PreviewLoadingScreen />;
     }
 
     return (
