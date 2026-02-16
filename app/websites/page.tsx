@@ -108,7 +108,7 @@ export default async function WebsitesPage({ searchParams }: WebsitesPageProps) 
                         </div>
                     </div>
 
-                    <div className="px-4 py-6 sm:px-6 lg:px-10">
+                    <div className="px-4 py-6 sm:px-6 lg:px-10 max-w-7xl mx-auto">
                         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                             <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                                 <div className="flex items-center justify-between">
@@ -202,10 +202,11 @@ export default async function WebsitesPage({ searchParams }: WebsitesPageProps) 
                                                 <div className="flex flex-1 flex-col space-y-3 p-4">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <div className="min-w-0">
-                                                            <h3 className="truncate text-3xl font-semibold leading-tight text-slate-900">
+                                                            <h3 className="truncate text-lg font-semibold tracking-tight text-slate-800">
                                                                 {page.name}
                                                             </h3>
                                                         </div>
+
                                                         <WebsiteCardMenu
                                                             pageId={page.id}
                                                             pageName={page.name}
@@ -219,7 +220,7 @@ export default async function WebsitesPage({ searchParams }: WebsitesPageProps) 
 
                                                     {page.isPublished ? (
                                                         <div className="flex items-center justify-between gap-2">
-                                                            <p className="truncate text-xl text-blue-400">{siteUrl.replace('http://', '')}</p>
+                                                            <p className="truncate text-sm text-slate-500">{siteUrl.replace('http://', '')}</p>
                                                             <CopyUrlButton url={siteUrl} />
                                                         </div>
                                                     ) : (

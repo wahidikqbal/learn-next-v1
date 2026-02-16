@@ -72,7 +72,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
                         </div>
                     </div>
 
-                    <div className="px-4 py-6 sm:px-6 lg:px-10">
+                    <div className="px-4 py-6 sm:px-6 lg:px-10 max-w-7xl mx-auto">
                         <section id="create-website" className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
                             {errorMessage && (
                                 <p className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
