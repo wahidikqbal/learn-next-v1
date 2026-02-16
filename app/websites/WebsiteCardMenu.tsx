@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { Eye, MoreVertical, Rocket, Trash2 } from 'lucide-react';
 import ConfirmModal from '@/app/components/ui/ConfirmModal';
+import { useToast } from '@/app/components/ui/ToastProvider';
 
 type WebsiteCardMenuProps = {
     pageId: string;
@@ -33,6 +34,7 @@ export default function WebsiteCardMenu({
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [confirmType, setConfirmType] = useState<ConfirmType>(null);
     const [isPending, startTransition] = useTransition();
+    const { showToast } = useToast();
 
     useEffect(() => {
         const handleExternalMenuOpen = (event: Event) => {
@@ -92,6 +94,7 @@ export default function WebsiteCardMenu({
 
     const handleConfirmAction = () => {
         if (!confirmConfig) return;
+        const actionType = confirmType;
         const formData = new FormData();
         formData.set('pageId', pageId);
 
@@ -100,7 +103,23 @@ export default function WebsiteCardMenu({
         setIsMenuOpen(false);
 
         startTransition(async () => {
-            await confirmConfig.action(formData);
+            try {
+                await confirmConfig.action(formData);
+
+                if (actionType === 'publish') {
+                    showToast('Website berhasil dipublish.', 'success');
+                    return;
+                }
+
+                if (actionType === 'unpublish') {
+                    showToast('Website berhasil dijadikan draft.', 'success');
+                    return;
+                }
+
+                showToast('Website berhasil dihapus.', 'success');
+            } catch {
+                showToast('Aksi gagal diproses. Coba lagi.', 'error');
+            }
         });
     };
 
