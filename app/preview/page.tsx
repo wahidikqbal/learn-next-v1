@@ -1,13 +1,13 @@
 // app/preview/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import PageRenderer, { Block } from '../components/PageRenderer';
 import { schemaMap } from '../components/editor/schemaMap';
 import PreviewLoadingScreen from '@/app/components/ui/PreviewLoadingScreen';
 
-export default function PreviewPage() {
+function PreviewPageContent() {
     const searchParams = useSearchParams();
     const pageId = searchParams.get('pageId');
     const storageKey = pageId ? `preview_blocks_${pageId}` : 'preview_blocks';
@@ -56,5 +56,13 @@ export default function PreviewPage() {
         <main className="min-h-screen bg-white">
             <PageRenderer blocks={blocks} schemaMap={schemaMap} />
         </main>
+    );
+}
+
+export default function PreviewPage() {
+    return (
+        <Suspense fallback={<PreviewLoadingScreen />}>
+            <PreviewPageContent />
+        </Suspense>
     );
 }

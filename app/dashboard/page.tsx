@@ -30,9 +30,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     const profileImage = session.user.image || '/default-avatar.svg';
     const profileName = session.user.name?.trim() || session.user.email?.split('@')[0] || 'User';
     const errorMessage = mapError(params.error);
-    const isAdmin =
-        session.user.role === 'ADMIN' ||
-        session.user.email?.toLowerCase() === 'wahidikqbal@gmail.com';
+    const isAdmin = session.user.role === 'ADMIN';
 
     return (
         <main className="min-h-screen bg-slate-50">

@@ -28,9 +28,7 @@ type WebsitesPageProps = {
 export default async function WebsitesPage({ searchParams }: WebsitesPageProps) {
     const session = await requireUser();
     const params = await searchParams;
-    const isAdmin =
-        session.user.role === 'ADMIN' ||
-        session.user.email?.toLowerCase() === 'wahidikqbal@gmail.com';
+    const isAdmin = session.user.role === 'ADMIN';
 
     const profileImage = session.user.image || '/default-avatar.svg';
     const profileName = session.user.name?.trim() || session.user.email?.split('@')[0] || 'User';

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/auth';
 
 function extractSubdomain(hostHeader: string | null): string | null {
     if (!hostHeader) return null;
@@ -15,25 +16,76 @@ function extractSubdomain(hostHeader: string | null): string | null {
     return subdomain;
 }
 
-export function proxy(request: NextRequest) {
+function isProtectedPath(pathname: string): boolean {
+    return (
+        pathname.startsWith('/dashboard') ||
+        pathname.startsWith('/websites') ||
+        pathname.startsWith('/edit') ||
+        pathname.startsWith('/preview') ||
+        pathname.startsWith('/admin') ||
+        pathname.startsWith('/api/pages') ||
+        pathname.startsWith('/api/publish')
+    );
+}
+
+function isAdminPath(pathname: string): boolean {
+    return pathname.startsWith('/admin');
+}
+
+function isAdminApiPath(pathname: string): boolean {
+    return pathname.startsWith('/api/admin');
+}
+
+export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    if (pathname !== '/') {
-        return NextResponse.next();
+    if (pathname === '/') {
+        const subdomain = extractSubdomain(request.headers.get('host'));
+        if (subdomain) {
+            const rewrittenUrl = request.nextUrl.clone();
+            rewrittenUrl.pathname = `/published/${subdomain}`;
+
+            return NextResponse.rewrite(rewrittenUrl);
+        }
     }
 
-    const subdomain = extractSubdomain(request.headers.get('host'));
-    if (!subdomain) {
-        return NextResponse.next();
+    const session = await auth();
+    const isAuthenticated = Boolean(session?.user?.id);
+    const isAdmin = session?.user?.role === 'ADMIN';
+
+    if (pathname === '/login' && isAuthenticated) {
+        const destination = isAdmin ? '/admin' : '/dashboard';
+        return NextResponse.redirect(new URL(destination, request.url));
     }
 
-    const rewrittenUrl = request.nextUrl.clone();
-    rewrittenUrl.pathname = `/published/${subdomain}`;
+    if (isProtectedPath(pathname) && !isAuthenticated) {
+        if (pathname.startsWith('/api/')) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
 
-    return NextResponse.rewrite(rewrittenUrl);
+    if ((isAdminPath(pathname) || isAdminApiPath(pathname)) && !isAdmin) {
+        if (pathname.startsWith('/api/')) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+        }
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    return NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/'],
+    matcher: [
+        '/',
+        '/login',
+        '/dashboard/:path*',
+        '/websites/:path*',
+        '/edit/:path*',
+        '/preview/:path*',
+        '/admin/:path*',
+        '/api/pages/:path*',
+        '/api/publish',
+        '/api/admin/:path*',
+    ],
 };
-
