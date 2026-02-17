@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { publishPageForActor } from '@/features/pages/services/page.service';
+import { buildTenantUrl } from '@/shared/config/env';
 
 type PageParams = {
     params: Promise<{ pageId: string }>;
@@ -36,6 +37,6 @@ export async function POST(_: Request, { params }: PageParams) {
         success: true,
         subdomain: result.page.subdomain,
         publishedAt: result.page.publishedAt,
-        url: `http://${result.page.subdomain}.localhost:3000`,
+        url: buildTenantUrl(result.page.subdomain),
     });
 }

@@ -8,9 +8,11 @@ import DeleteUserButton from './DeleteUserButton';
 import RoleToggleButton from './RoleToggleButton';
 import AppSidebar from '@/shared/ui/navigation/AppSidebar';
 import DeletePageButton from '@/app/dashboard/DeletePageButton';
+import { getRootDomain } from '@/shared/config/env';
 
 export default async function AdminPage() {
     const session = await requireAdmin();
+    const rootDomain = getRootDomain();
     const profileImage = session.user.image || '/default-avatar.svg';
     const profileName = session.user.name?.trim() || session.user.email?.split('@')[0] || 'User';
 
@@ -169,7 +171,7 @@ export default async function AdminPage() {
                                     </span>
                                 </div>
                                 <p className="mt-2 text-xs text-gray-600 break-all">
-                                    {page.subdomain}.localhost:3000
+                                    {page.subdomain}.{rootDomain}
                                 </p>
                                 <div className="mt-3 flex flex-wrap gap-2">
                                     <Link
@@ -204,7 +206,7 @@ export default async function AdminPage() {
                                     <tr key={page.id} className="border-b border-gray-100">
                                         <td className="py-3 pr-4 text-gray-900 font-medium">{page.name}</td>
                                         <td className="py-3 pr-4 text-gray-700">{page.owner.email ?? '-'}</td>
-                                        <td className="py-3 pr-4 text-gray-700">{page.subdomain}.localhost:3000</td>
+                                        <td className="py-3 pr-4 text-gray-700">{page.subdomain}.{rootDomain}</td>
                                         <td className="py-3 pr-4">
                                             <span
                                                 className={`rounded-full px-2 py-1 text-xs font-semibold ${

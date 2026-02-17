@@ -15,6 +15,7 @@ import { deletePageAction, publishPageAction, unpublishPageAction } from '@/app/
 import CopyUrlButton from '@/app/dashboard/CopyUrlButton';
 import { defaultTemplates } from '@/app/components/templates/defaults';
 import AppSidebar from '@/shared/ui/navigation/AppSidebar';
+import { buildTenantUrl } from '@/shared/config/env';
 import WebsitesFilters from './WebsitesFilters';
 import WebsiteCardMenu from './WebsiteCardMenu';
 
@@ -154,7 +155,7 @@ export default async function WebsitesPage({ searchParams }: WebsitesPageProps) 
                             ) : (
                                 <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                                     {pages.map((page) => {
-                                        const siteUrl = `http://${page.subdomain}.localhost:3000`;
+                                        const siteUrl = buildTenantUrl(page.subdomain);
                                         const simulatedViews = page.isPublished ? 7 : 1;
                                         return (
                                             <article

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { publishCustomPageForOwner } from '@/features/pages/services/page.service';
+import { buildTenantUrl } from '@/shared/config/env';
 
 type PublishPayload = {
     subdomain?: unknown;
@@ -53,6 +54,6 @@ export async function POST(request: Request) {
         pageId: result.page.id,
         subdomain: result.page.subdomain,
         publishedAt: result.page.publishedAt,
-        url: `http://${result.page.subdomain}.localhost:3000`,
+        url: buildTenantUrl(result.page.subdomain),
     });
 }

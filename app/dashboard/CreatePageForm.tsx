@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { defaultTemplates } from '@/app/components/templates/defaults';
+import { getRootDomain } from '@/shared/config/env';
 
 type CreatePageFormProps = {
     initialTemplateId?: string;
@@ -19,6 +20,7 @@ function toSlug(value: string) {
 }
 
 export default function CreatePageForm({ initialTemplateId, action }: CreatePageFormProps) {
+    const rootDomain = getRootDomain();
     const resolvedDefaultTemplateId = useMemo(() => {
         if (!initialTemplateId) return defaultTemplates[0]?.id ?? '';
         const found = defaultTemplates.find((template) => template.id === initialTemplateId);
@@ -71,7 +73,7 @@ export default function CreatePageForm({ initialTemplateId, action }: CreatePage
                             className="w-full px-3 py-2 text-sm outline-none"
                         />
                         <span className="bg-gray-50 px-3 py-2 text-xs text-gray-500 border-l border-gray-200">
-                            .localhost:3000
+                            .{rootDomain}
                         </span>
                     </div>
                     <p className="mt-1 text-xs text-gray-500">Hanya huruf kecil, angka, dan tanda `-`.</p>

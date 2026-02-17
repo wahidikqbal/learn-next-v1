@@ -90,6 +90,41 @@ export default function WebsiteCardMenu({
         setConfirmType(type);
     };
 
+    const handleOpenPreview = () => {
+        setIsMenuOpen(false);
+
+        if (isPublished) {
+            window.open(previewUrl, '_blank', 'noopener,noreferrer');
+            return;
+        }
+
+        startTransition(async () => {
+            try {
+                const response = await fetch('/api/preview-token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pageId }),
+                });
+
+                if (response.ok) {
+                    const data = (await response.json()) as { previewUrl?: string; expiresAt?: string };
+                    if (typeof data.previewUrl === 'string' && data.previewUrl) {
+                        const openUrl = new URL(data.previewUrl, window.location.origin);
+                        if (typeof data.expiresAt === 'string' && data.expiresAt) {
+                            openUrl.searchParams.set('expiresAt', data.expiresAt);
+                        }
+                        window.open(openUrl.toString(), '_blank', 'noopener,noreferrer');
+                        return;
+                    }
+                }
+
+                window.open(previewUrl, '_blank', 'noopener,noreferrer');
+            } catch {
+                window.open(previewUrl, '_blank', 'noopener,noreferrer');
+            }
+        });
+    };
+
     const closeConfirm = () => setConfirmType(null);
 
     const handleConfirmAction = () => {
@@ -170,15 +205,14 @@ export default function WebsiteCardMenu({
 
                 {isMenuOpen && (
                     <div className="absolute right-0 z-20 mt-2 w-48 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl">
-                            <a
-                                href={previewUrl}
-                                target="_blank"
-                                rel="noreferrer"
+                            <button
+                                type="button"
+                                onClick={handleOpenPreview}
                                 className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                             >
                                 <Eye size={15} />
                                 Preview
-                            </a>
+                            </button>
 
                             {showStatusActions && (
                                 isPublished ? (

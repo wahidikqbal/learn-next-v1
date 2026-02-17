@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ExternalLink, Maximize, Minus, Monitor, Plus, Smartphone, Tablet, LayoutTemplate, Upload, X } from 'lucide-react';
+import { buildTenantUrl, getRootDomain } from '@/shared/config/env';
 
 interface EditorToolbarProps {
     publishMode?: 'page' | 'custom';
@@ -46,9 +47,8 @@ export default function EditorToolbar({
         [customSubdomain, publishMode, subdomain]
     );
 
-    const publishUrl = sanitizedSubdomain
-        ? `http://${sanitizedSubdomain}.localhost:3000`
-        : '';
+    const publishUrl = sanitizedSubdomain ? buildTenantUrl(sanitizedSubdomain) : '';
+    const rootDomain = getRootDomain();
 
     const mapPublishError = (status: number, message?: string) => {
         if (status === 409) return 'Subdomain sudah dipakai.';
@@ -248,12 +248,12 @@ export default function EditorToolbar({
                                     />
                                 )}
                                 <span className="px-3 py-2.5 text-sm text-gray-500 bg-gray-50 border-l border-gray-200">
-                                    .localhost:3000
+                                    .{rootDomain}
                                 </span>
                             </div>
 
                             <p className="text-xs text-gray-500">
-                                URL publish: {publishUrl || 'http://subdomain.localhost:3000'}
+                                URL publish: {publishUrl || buildTenantUrl('subdomain')}
                             </p>
 
                             {publishError && (

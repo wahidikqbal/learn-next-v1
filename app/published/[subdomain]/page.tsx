@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import PageRenderer from '@/app/components/PageRenderer';
 import { schemaMap } from '@/app/components/editor/schemaMap';
 import { getPublishedPage } from '@/lib/pages';
+import { getRootDomain } from '@/shared/config/env';
 
 const plusJakarta = Plus_Jakarta_Sans({
     subsets: ['latin'],
@@ -15,6 +16,7 @@ type PublishedPageProps = {
 
 export default async function PublishedPage({ params }: PublishedPageProps) {
     const { subdomain } = await params;
+    const rootDomain = getRootDomain();
     const site = await getPublishedPage(subdomain);
 
     if (!site) {
@@ -31,7 +33,7 @@ export default async function PublishedPage({ params }: PublishedPageProps) {
                         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">learn-next</p>
                         <h1 className="mt-4 text-2xl font-bold text-slate-900">Halaman Belum Dipublish</h1>
                         <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                            Subdomain <span className="font-semibold">{subdomain}.localhost:3000</span> belum memiliki data publish.
+                            Subdomain <span className="font-semibold">{subdomain}.{rootDomain}</span> belum memiliki data publish.
                         </p>
 
                         <div className="mt-7">

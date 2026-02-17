@@ -1,53 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-
-function extractSubdomain(hostHeader: string | null): string | null {
-    if (!hostHeader) return null;
-
-    const host = hostHeader.split(':')[0].toLowerCase();
-    if (!host.endsWith('.localhost')) return null;
-
-    const segments = host.split('.');
-    if (segments.length < 2) return null;
-
-    const subdomain = segments.slice(0, -1).join('.');
-    if (!subdomain) return null;
-
-    return subdomain;
-}
-
-function isProtectedPath(pathname: string): boolean {
-    return (
-        pathname.startsWith('/dashboard') ||
-        pathname.startsWith('/websites') ||
-        pathname.startsWith('/edit') ||
-        pathname.startsWith('/preview') ||
-        pathname.startsWith('/admin') ||
-        pathname.startsWith('/api/pages') ||
-        pathname.startsWith('/api/publish')
-    );
-}
-
-function isAdminPath(pathname: string): boolean {
-    return pathname.startsWith('/admin');
-}
-
-function isAdminApiPath(pathname: string): boolean {
-    return pathname.startsWith('/api/admin');
-}
+import { isAdminApiPath, isAdminPath, isProtectedPath } from '@/features/tenant/services/proxy-guards';
 
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
-
-    if (pathname === '/') {
-        const subdomain = extractSubdomain(request.headers.get('host'));
-        if (subdomain) {
-            const rewrittenUrl = request.nextUrl.clone();
-            rewrittenUrl.pathname = `/published/${subdomain}`;
-
-            return NextResponse.rewrite(rewrittenUrl);
-        }
-    }
 
     const session = await auth();
     const isAuthenticated = Boolean(session?.user?.id);
@@ -83,9 +39,11 @@ export const config = {
         '/websites/:path*',
         '/edit/:path*',
         '/preview/:path*',
+        '/preview/token/:path*',
         '/admin/:path*',
         '/api/pages/:path*',
         '/api/publish',
+        '/api/preview-token',
         '/api/admin/:path*',
     ],
 };

@@ -230,6 +230,28 @@ export default function EditByPageId() {
             // Ignore save errors here, preview will still open with latest persisted state.
         }
 
+        try {
+            const response = await fetch('/api/preview-token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pageId }),
+            });
+
+                if (response.ok) {
+                    const data = (await response.json()) as { previewUrl?: string; expiresAt?: string };
+                    if (typeof data.previewUrl === 'string' && data.previewUrl) {
+                        const previewUrl = new URL(data.previewUrl, window.location.origin);
+                        if (typeof data.expiresAt === 'string' && data.expiresAt) {
+                            previewUrl.searchParams.set('expiresAt', data.expiresAt);
+                        }
+                        window.open(previewUrl.toString(), '_blank');
+                        return;
+                    }
+                }
+        } catch {
+            // Ignore token generation errors and fallback to protected preview route.
+        }
+
         window.open(`/preview/${pageId}`, '_blank');
     }, [blocks, pageId, persistBlocks]);
 
