@@ -146,3 +146,11 @@ Exit criteria:
   - introduce `page.service.ts`
   - migrate `app/api/pages/[pageId]/publish/route.ts` to service call
 - Keep PR small, measurable, and reversible.
+
+## SOON FEATURE
+- Rate Limit With Redis
+- Captcha with Cloudflare
+- Mobile view
+- Subscription / Billing with Mayar
+- Paid and Unpaid user
+- 

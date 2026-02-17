@@ -104,7 +104,7 @@ export default function TemplatesPage() {
                                         : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                                         }`}
                                 >
-                                    <span className="break-words text-center">{cat.label}</span>
+                                    <span className="wrap-break-words text-center">{cat.label}</span>
                                 </button>
                             ))}
                         </div>
