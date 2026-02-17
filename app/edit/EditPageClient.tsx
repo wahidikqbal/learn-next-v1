@@ -79,7 +79,7 @@ function EditPageContent() {
     }, [blocks, handleUpdateProps, resetModal.blockId]);
 
     return (
-        <div className="flex h-[100dvh] flex-col lg:flex-row bg-white overflow-hidden">
+        <div className="flex h-[dvh] flex-col lg:flex-row bg-white overflow-hidden">
             <EditorSidebar
                 blocks={blocks}
                 openId={openId}
@@ -118,7 +118,6 @@ function EditPageContent() {
                 onClose={() => setResetModal({ isOpen: false, blockId: null })}
                 onConfirm={confirmReset}
             />
-
             <TemplateSelector
                 isOpen={showTemplateSelector}
                 onClose={() => setShowTemplateSelector(false)}
