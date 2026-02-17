@@ -91,3 +91,9 @@ export function getPreviewTokenSecret(): string {
     return secret.trim();
 }
 
+export function isLaravelPhase2Enabled(): boolean {
+    const fromPublic = process.env.NEXT_PUBLIC_ENABLE_LARAVEL_PHASE2;
+    const fromServer = process.env.ENABLE_LARAVEL_PHASE2;
+    const value = (fromPublic ?? fromServer ?? '').trim().toLowerCase();
+    return value === '1' || value === 'true' || value === 'yes';
+}

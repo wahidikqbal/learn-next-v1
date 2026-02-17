@@ -9,6 +9,13 @@ Target product: multi-tenant web builder (SaaS) with tenant domain model:
 
 This blueprint replaces the previous single-page publish model with a tenant website model.
 
+## Execution Docs
+- Phase 2 execution: `docs/PHASE_2_EXECUTION_CHECKLIST.md`
+- Phase 2 progress: `docs/PHASE_2_IMPLEMENTATION_PROGRESS_CHECKLIST.md`
+- Phase 3 execution: `docs/PHASE_3_EXECUTION_CHECKLIST.md`
+- Phase 3 progress: `docs/PHASE_3_IMPLEMENTATION_PROGRESS_CHECKLIST.md`
+- Auth cutover (A -> B): `docs/AUTH_CUTOVER_PLAN_A_TO_B.md`
+
 ## Core Requirements
 - Responsive frontend across editor, dashboard, and published site.
 - Tenant chooses unique subdomain.
@@ -261,6 +268,8 @@ Exit criteria:
 
 ## Execution Docs
 - `docs/PHASE_1_EXECUTION_CHECKLIST.md`
+- `docs/PHASE_2_EXECUTION_CHECKLIST.md`
 - `docs/WEB_BUILDER_API_CONTRACT.md`
 - `docs/DATA_MODEL_TARGET.md`
 - `docs/BACKEND_LARAVEL_PHASE1_EXECUTION.md`
+- `docs/PHASE_2_IMPLEMENTATION_PROGRESS_CHECKLIST.md`

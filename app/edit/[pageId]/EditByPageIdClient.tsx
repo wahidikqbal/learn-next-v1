@@ -21,6 +21,7 @@ type PageResponse = {
     page: {
         id: string;
         name: string;
+        slug?: string;
         subdomain: string;
         blocks: Block[];
     };
@@ -36,6 +37,7 @@ export default function EditByPageId() {
     const pageId = params.pageId;
 
     const [pageName, setPageName] = useState('Halaman');
+    const [pageSlug, setPageSlug] = useState('/');
     const [subdomain, setSubdomain] = useState('');
     const [blocks, setBlocks] = useState<Block[]>(INITIAL_BLOCKS);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -52,20 +54,54 @@ export default function EditByPageId() {
     });
 
     const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const metadataTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isInitialSyncRef = useRef(true);
+    const isInitialMetadataSyncRef = useRef(true);
     const closeDrawerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const swipeStartXRef = useRef(0);
     const swipeCurrentXRef = useRef(0);
+    const [metadataSaveState, setMetadataSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+
+    const normalizeSlugInput = useCallback((value: string) => {
+        const trimmed = value.trim().toLowerCase();
+        if (!trimmed || trimmed === '/') return '/';
+
+        const rawSegments = trimmed.replace(/^\/+/, '').split('/');
+        const segments = rawSegments
+            .map((segment) =>
+                segment
+                    .replace(/[^a-z0-9-]/g, '-')
+                    .replace(/-+/g, '-')
+                    .replace(/^-|-$/g, '')
+            )
+            .filter(Boolean);
+
+        if (segments.length === 0) return '/';
+        return `/${segments.join('/')}`;
+    }, []);
+
+    const persistPagePatch = useCallback(
+        async (payload: { blocks?: Block[]; name?: string; slug?: string }) => {
+            const response = await fetch(`/api/pages/${pageId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to persist page changes.');
+            }
+
+            return (await response.json()) as PageResponse;
+        },
+        [pageId]
+    );
 
     const persistBlocks = useCallback(
         async (nextBlocks: Block[]) => {
-            await fetch(`/api/pages/${pageId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ blocks: nextBlocks }),
-            });
+            await persistPagePatch({ blocks: nextBlocks });
         },
-        [pageId]
+        [persistPagePatch]
     );
 
     useEffect(() => {
@@ -84,6 +120,7 @@ export default function EditByPageId() {
 
             const data = (await response.json()) as PageResponse;
             setPageName(data.page.name);
+            setPageSlug(data.page.slug ?? '/');
             setSubdomain(data.page.subdomain);
             setBlocks(data.page.blocks);
             setIsLoaded(true);
@@ -118,6 +155,43 @@ export default function EditByPageId() {
     }, [blocks, isLoaded, pageId, persistBlocks]);
 
     useEffect(() => {
+        if (!isLoaded) return;
+
+        if (isInitialMetadataSyncRef.current) {
+            isInitialMetadataSyncRef.current = false;
+            return;
+        }
+
+        if (metadataTimerRef.current) {
+            clearTimeout(metadataTimerRef.current);
+        }
+
+        setMetadataSaveState('saving');
+
+        metadataTimerRef.current = setTimeout(() => {
+            void (async () => {
+                try {
+                    const data = await persistPagePatch({
+                        name: pageName,
+                        slug: pageSlug,
+                    });
+                    setPageName(data.page.name);
+                    setPageSlug(data.page.slug ?? pageSlug);
+                    setMetadataSaveState('saved');
+                } catch {
+                    setMetadataSaveState('error');
+                }
+            })();
+        }, 700);
+
+        return () => {
+            if (metadataTimerRef.current) {
+                clearTimeout(metadataTimerRef.current);
+            }
+        };
+    }, [isLoaded, pageName, pageSlug, persistPagePatch]);
+
+    useEffect(() => {
         const media = window.matchMedia('(min-width: 1024px)');
         const handleChange = (event: MediaQueryListEvent | MediaQueryList) => {
             if (event.matches) {
@@ -142,6 +216,9 @@ export default function EditByPageId() {
         return () => {
             if (closeDrawerTimerRef.current) {
                 clearTimeout(closeDrawerTimerRef.current);
+            }
+            if (metadataTimerRef.current) {
+                clearTimeout(metadataTimerRef.current);
             }
         };
     }, []);
@@ -223,9 +300,17 @@ export default function EditByPageId() {
             clearTimeout(saveTimerRef.current);
             saveTimerRef.current = null;
         }
+        if (metadataTimerRef.current) {
+            clearTimeout(metadataTimerRef.current);
+            metadataTimerRef.current = null;
+        }
 
         try {
-            await persistBlocks(blocks);
+            await persistPagePatch({
+                blocks,
+                name: pageName,
+                slug: pageSlug,
+            });
         } catch {
             // Ignore save errors here, preview will still open with latest persisted state.
         }
@@ -253,7 +338,7 @@ export default function EditByPageId() {
         }
 
         window.open(`/preview/${pageId}`, '_blank');
-    }, [blocks, pageId, persistBlocks]);
+    }, [blocks, pageId, pageName, pageSlug, persistPagePatch]);
 
     if (!isLoaded) {
         return <EditorLoadingScreen />;
@@ -331,6 +416,28 @@ export default function EditByPageId() {
                     </p>
                 </div>
                 <div className={`${isCanvasFullscreen ? 'hidden lg:block' : 'block'}`}>
+                    <div className="border-b border-slate-200 bg-white px-3 py-2 sm:px-4">
+                        <div className="grid grid-cols-1 gap-2 lg:grid-cols-[minmax(220px,1fr)_minmax(220px,1fr)_auto] lg:items-center">
+                            <input
+                                value={pageName}
+                                onChange={(event) => setPageName(event.target.value)}
+                                placeholder="Nama halaman"
+                                className="h-9 rounded-md border border-slate-300 px-3 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            />
+                            <input
+                                value={pageSlug}
+                                onChange={(event) => setPageSlug(normalizeSlugInput(event.target.value))}
+                                placeholder="/about"
+                                className="h-9 rounded-md border border-slate-300 px-3 text-sm text-slate-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            />
+                            <p className="text-xs font-medium text-slate-500">
+                                {metadataSaveState === 'saving' && 'Menyimpan metadata...'}
+                                {metadataSaveState === 'saved' && 'Metadata tersimpan'}
+                                {metadataSaveState === 'error' && 'Gagal simpan metadata'}
+                                {metadataSaveState === 'idle' && 'Metadata halaman'}
+                            </p>
+                        </div>
+                    </div>
                     <EditorToolbar
                         pageId={pageId}
                         pageName={pageName}

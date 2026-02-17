@@ -3,11 +3,13 @@
 import { useState, useTransition } from 'react';
 import { useEffect, useId, useRef } from 'react';
 import { Eye, MoreVertical, Rocket, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 import ConfirmModal from '@/shared/ui/feedback/ConfirmModal';
 import { useToast } from '@/shared/ui/feedback/ToastProvider';
 
 type WebsiteCardMenuProps = {
     pageId: string;
+    tenantId: string;
     pageName: string;
     previewUrl: string;
     isPublished: boolean;
@@ -21,6 +23,7 @@ type ConfirmType = 'publish' | 'unpublish' | 'delete' | null;
 
 export default function WebsiteCardMenu({
     pageId,
+    tenantId,
     pageName,
     previewUrl,
     isPublished,
@@ -213,6 +216,14 @@ export default function WebsiteCardMenu({
                                 <Eye size={15} />
                                 Preview
                             </button>
+                            <Link
+                                href={`/tenants/${tenantId}/navbar`}
+                                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <Rocket size={15} />
+                                Edit Navbar
+                            </Link>
 
                             {showStatusActions && (
                                 isPublished ? (

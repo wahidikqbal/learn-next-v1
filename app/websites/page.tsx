@@ -15,7 +15,8 @@ import { deletePageAction, publishPageAction, unpublishPageAction } from '@/app/
 import CopyUrlButton from '@/app/dashboard/CopyUrlButton';
 import { defaultTemplates } from '@/app/components/templates/defaults';
 import AppSidebar from '@/shared/ui/navigation/AppSidebar';
-import { buildTenantUrl } from '@/shared/config/env';
+import { buildTenantUrl, isLaravelPhase2Enabled } from '@/shared/config/env';
+import { listLaravelPagesByOwner } from '@/features/pages/services/laravel-page.service';
 import WebsitesFilters from './WebsitesFilters';
 import WebsiteCardMenu from './WebsiteCardMenu';
 
@@ -34,10 +35,27 @@ export default async function WebsitesPage({ searchParams }: WebsitesPageProps) 
     const profileImage = session.user.image || '/default-avatar.svg';
     const profileName = session.user.name?.trim() || session.user.email?.split('@')[0] || 'User';
 
-    const allPages = await prisma.page.findMany({
-        where: { ownerId: session.user.id },
-        orderBy: { createdAt: 'desc' },
-    });
+    const useLaravel = isLaravelPhase2Enabled();
+    const allPages = useLaravel
+        ? (await listLaravelPagesByOwner(session.user.id)).map((page) => ({
+            id: page.id,
+            tenantId: page.tenantId,
+            name: page.title,
+            subdomain: page.subdomain,
+            templateId: page.layoutTemplate || page.pageType || 'custom',
+            isPublished: page.isPublished,
+            createdAt: page.createdAt ? new Date(page.createdAt) : new Date(),
+            updatedAt: page.updatedAt ? new Date(page.updatedAt) : new Date(),
+        }))
+        : await prisma.page.findMany({
+            where: { ownerId: session.user.id },
+            orderBy: { createdAt: 'desc' },
+        }).then((rows) =>
+            rows.map((row) => ({
+                ...row,
+                tenantId: row.id,
+            }))
+        );
 
     const query = (params.q ?? '').trim().toLowerCase();
     const selectedStatus = params.status ?? 'all';
@@ -208,6 +226,7 @@ export default async function WebsitesPage({ searchParams }: WebsitesPageProps) 
 
                                                         <WebsiteCardMenu
                                                             pageId={page.id}
+                                                            tenantId={page.tenantId}
                                                             pageName={page.name}
                                                             previewUrl={page.isPublished ? siteUrl : `/preview/${page.id}`}
                                                             isPublished={page.isPublished}
